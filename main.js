@@ -1,4 +1,8 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const CustomCursor = require('custom-cursor.js').default 
+const customCursor = new CustomCursor('.cursor').initialize()
+
+},{"custom-cursor.js":9}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23,7 +27,7 @@ function destroy(cursor) {
         cursor.initialized = false;
     }
 }
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -33,7 +37,7 @@ exports.enter = enter;
 function enter(cursor) {
   cursor.element.classList.remove('cursor--off-screen');
 }
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -43,7 +47,7 @@ exports.leave = leave;
 function leave(cursor) {
   cursor.element.classList.add('cursor--off-screen');
 }
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -54,7 +58,7 @@ function track(e, cursor) {
   cursor.position.X = e.clientX;
   cursor.position.Y = e.clientY;
 }
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -121,11 +125,11 @@ var Focus = function () {
 }();
 
 exports.default = Focus;
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 exports.initialize = initialize;
 
@@ -138,37 +142,40 @@ var _focus2 = _interopRequireDefault(_focus);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function initialize(cursor) {
-    if (!(0, _isMobileUserAgent.isMobileUserAgent)()) {
-        cursor.element.classList.add('cursor--initialized');
+  if (!(0, _isMobileUserAgent.isMobileUserAgent)()) {
+    cursor.element.classList.add('cursor--initialized');
 
-        if (cursor.options.hideTrueCursor) {
-            cursor.styleTag = document.createElement('style');
-            cursor.styleTag.innerHTML = '\n        * {\n          cursor: none;\n        }\n      ';
+    if (cursor.options.hideTrueCursor) {
+      cursor.styleTag = document.createElement('style');
+      cursor.styleTag.innerHTML = '\n        * {\n          cursor: none;\n        }\n      ';
 
-            document.head.appendChild(cursor.styleTag);
-        }
-
-        document.addEventListener('mousemove', cursor.track);
-
-        document.addEventListener('mouseleave', cursor.leave);
-
-        document.addEventListener('mouseenter', cursor.enter);
-
-        var render = function render() {
-            var top = cursor.position.Y - cursor.element.clientHeight / 2;
-            var left = cursor.position.X - cursor.element.clientWidth / 2;
-
-            cursor.element.style.transform = 'matrix(1, 0, 0, 1, ' + left + ', ' + top + ')';
-            requestAnimationFrame(render);
-        };
-
-        render();
-
-        cursor.focusObj = new _focus2.default(cursor).initialize();
-        cursor.initialized = true;
+      document.head.appendChild(cursor.styleTag);
     }
+
+    document.addEventListener('mousemove', cursor.track);
+
+    document.addEventListener('mouseleave', cursor.leave);
+
+    document.addEventListener('mouseenter', cursor.enter);
+
+    var render = function render() {
+      if (!cursor.disabled) {
+        var top = cursor.position.Y - cursor.element.clientHeight / 2;
+        var left = cursor.position.X - cursor.element.clientWidth / 2;
+
+        cursor.element.style.transform = 'matrix(1, 0, 0, 1, ' + left + ', ' + top + ')';
+      }
+
+      requestAnimationFrame(render);
+    };
+
+    render();
+
+    cursor.focusObj = new _focus2.default(cursor).initialize();
+    cursor.initialized = true;
+  }
 }
-},{"../util/isMobileUserAgent":9,"./focus":5}],7:[function(require,module,exports){
+},{"../util/isMobileUserAgent":10,"./focus":6}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -186,7 +193,7 @@ exports.default = {
   focusClass: 'cursor--focused'
 
 };
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -364,7 +371,7 @@ var CustomCursor = function () {
 }();
 
 exports.default = CustomCursor;
-},{"./core/destroy":1,"./core/events/enter":2,"./core/events/leave":3,"./core/events/track":4,"./core/initialize":6,"./defaults":7,"./util/log":10,"./util/object":11}],9:[function(require,module,exports){
+},{"./core/destroy":2,"./core/events/enter":3,"./core/events/leave":4,"./core/events/track":5,"./core/initialize":7,"./defaults":8,"./util/log":11,"./util/object":12}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -378,7 +385,7 @@ function isMobileUserAgent() {
   }
   return isMobile;
 }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -388,7 +395,7 @@ exports.warn = warn;
 function warn(msg) {
   console.error("[CustomCursor]: " + msg);
 }
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -404,24 +411,4 @@ function areOptionsEqual(object1, object2) {
 
   return true;
 }
-},{}],12:[function(require,module,exports){
-const CustomCursor = require('custom-cursor.js').default
-
-const options = {
-   // Whether or not the true cursor should be hidden when the custom cursor is initialized
-   hideTrueCursor: false,
- 
-   // Array of DOM elements/selector strings that apply the focus class on hover
-   focusElements: ['a'],
- 
-   // Class applied when the true cursor is hovering over a focusElement
-   focusClass: 'cursor--focused'
- }
- 
- // Can be selector string or DOM node
- const element = '.cursor'
- 
- const customCursor = new CustomCursor(element, options)
-
- customCursor.initialize()
-},{"custom-cursor.js":8}]},{},[12]);
+},{}]},{},[1]);
