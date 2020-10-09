@@ -7,30 +7,42 @@ body {
 }
 
 .cursor {
-   align-items: center;
-   border: 1px solid #ff5050;
    color: #ff5050;
    box-sizing: border-box;
    border-radius: 50%;
    display: none;
    pointer-events: none;
-   justify-content: center;
    -webkit-user-select: none;
    -moz-user-select: none;
    -ms-user-select: none;
    user-select: none;
    position: fixed;
-   height: 60px;
-   opacity: 0;
+   height: 0;
+   width: 0;
+   transform-origin: center;
    transition: all 360ms cubic-bezier(.23,1,.32,1);
-   width: 60px;
    will-change: transform;
    z-index: 1000;
 }
 
-.cursor.cursor--initialized {
+.cursor-border {
+   align-items: center;
+   justify-content: center;
+   border: 1px solid #ff5050;
+   width: 60px;
+   height: 60px;
+   border-radius: 50%;
+   box-sizing: border-box;
+   position: absolute;
+   left: 0;
+   top: 0;
+   transform: translate(-50%, -50%);
    display: flex;
-   opacity: 1;
+   transition: all 360ms cubic-bezier(.23,1,.32,1);
+}
+
+.cursor.cursor--initialized {
+   display: block;
 }
 
 .cursor .text {
@@ -43,7 +55,7 @@ body {
    opacity: 0;
 }
 
-.cursor.cursor--focused {
+.cursor.cursor--focused .cursor-border {
    width: 90px;
    height: 90px;
 }
@@ -54,11 +66,17 @@ body {
 }
 
 a {
-   font-size: 3rem;
-   color: #0a0a0a;
    text-decoration: none;
+   color: #0a0a0a;
    font-weight: 700;
-   letter-spacing: .1em;
+   transition: opacity 720ms cubic-bezier(.23,1,.32,1);
+}
+
+a:hover {
+   opacity: .2;
+}
+
+.photo-link {
    position: fixed;
    top: 50%;
    left: 50%;
@@ -66,15 +84,19 @@ a {
    display: block;
 }
 
-a img {
+.photo-link img {
    height: 80vh;
    width: auto;
-   transition: opacity 720ms cubic-bezier(.23,1,.32,1);
    max-width: 100vw;
    object-fit: cover;
    user-select: none;
 }
 
-a img:hover {
-   opacity: 0.2;
+.github-link {
+   padding: 8px;
+   top: 8px;
+   right: 8px;
+   position: fixed;
+   font-size: .75rem;
+   text-transform: uppercase;
 }
