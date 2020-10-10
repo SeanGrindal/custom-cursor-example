@@ -1,6 +1,11 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const CustomCursor = require('custom-cursor.js').default 
-const customCursor = new CustomCursor('.cursor').initialize()
+const customCursor = new CustomCursor('.cursor', {
+   focusElements: [{
+      selector: '.photo-link',
+      focusClass: 'cursor--focused-view'
+   }, 'a']
+}).initialize()
 
 },{"custom-cursor.js":9}],2:[function(require,module,exports){
 'use strict';
@@ -65,6 +70,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -78,13 +85,30 @@ var Focus = function () {
     this.cursor = cursor;
 
     this.initializedElements = [];
+    this.focusClasses = [];
 
-    this.elementEnter = function () {
-      _this.cursor.element.classList.add(_this.cursor.options.focusClass);
+    this.elementEnter = function (focusClass, customEnterFunc) {
+      var func = function func() {
+        if (focusClass) {
+          _this.cursor.element.classList.add(focusClass);
+        }
+
+        if (typeof customEnterFunc == 'function') customEnterFunc();
+      };
+
+      return func;
     };
 
-    this.elementLeave = function () {
-      _this.cursor.element.classList.remove(_this.cursor.options.focusClass);
+    this.elementLeave = function (focusClass, customLeaveFunc) {
+      var func = function func() {
+        if (focusClass) {
+          _this.cursor.element.classList.remove(focusClass);
+        }
+
+        if (typeof customLeaveFunc == 'function') customLeaveFunc();
+      };
+
+      return func;
     };
   }
 
@@ -94,35 +118,48 @@ var Focus = function () {
       var _this2 = this;
 
       this.cursor.options.focusElements.forEach(function (selector) {
-        if (typeof selector !== 'string') return;
-        var elements = document.querySelectorAll(selector);
+        if (typeof selector == 'string' || (typeof selector === 'undefined' ? 'undefined' : _typeof(selector)) == 'object') {
+          var elSelector = selector.hasOwnProperty('selector') ? selector.selector : selector;
+          var focusClass = selector.hasOwnProperty('focusClass') ? selector.focusClass : _this2.cursor.options.focusClass;
+          var customEnterFunc = selector.hasOwnProperty('mouseenter') ? selector.mouseenter : null;
+          var customLeaveFunc = selector.hasOwnProperty('mouseleave') ? selector.mouseleave : null;
 
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+          var elements = document.querySelectorAll(elSelector);
 
-        try {
-          for (var _iterator = elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var el = _step.value;
+          var enterFunc = _this2.elementEnter(focusClass, customEnterFunc);
+          var leaveFunc = _this2.elementLeave(focusClass, customLeaveFunc);
 
-            if (_this2.initializedElements.includes(el)) continue;
-
-            el.addEventListener('mouseenter', _this2.elementEnter);
-            el.addEventListener('mouseleave', _this2.elementLeave);
-
-            _this2.initializedElements.push(el);
+          if (!_this2.focusClasses.includes(focusClass)) {
+            _this2.focusClasses.push(focusClass);
           }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
+
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
           try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
+            for (var _iterator = elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var el = _step.value;
+
+              if (_this2.initializedElements.includes(el)) continue;
+
+              el.addEventListener('mouseenter', enterFunc);
+              el.addEventListener('mouseleave', leaveFunc);
+
+              _this2.initializedElements.push({ el: el, enterFunc: enterFunc, leaveFunc: leaveFunc });
             }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
           } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
             }
           }
         }
@@ -133,14 +170,37 @@ var Focus = function () {
   }, {
     key: 'destroy',
     value: function destroy() {
-      var _this3 = this;
-
       this.initializedElements.forEach(function (initializedElement) {
-        initializedElement.removeEventListener('mouseenter', _this3.elementEnter);
-        initializedElement.removeEventListener('mouseleave', _this3.elementLeave);
+        initializedElement.el.removeEventListener('mouseenter', initializedElement.enterFunc);
+        initializedElement.el.removeEventListener('mouseleave', initializedElement.leaveFunc);
       });
 
-      this.cursor.element.classList.remove(this.cursor.options.focusClass);
+      this.initializedElements = [];
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = this.focusClasses[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var string = _step2.value;
+
+          this.cursor.element.classList.remove(string);
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
 
       return null;
     }
@@ -200,7 +260,7 @@ function initialize(cursor) {
     cursor.initialized = true;
   }
 }
-},{"../util/isMobileUserAgent":11,"./focus":6}],8:[function(require,module,exports){
+},{"../util/isMobileUserAgent":10,"./focus":6}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -351,8 +411,6 @@ var CustomCursor = function () {
         return;
       }
 
-      console.log(newOptions, this.options);
-
       if (!(0, _object.areOptionsEqual)(newOptions, this.options)) {
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
@@ -399,23 +457,7 @@ var CustomCursor = function () {
 }();
 
 exports.default = CustomCursor;
-},{"./core/destroy":2,"./core/events/enter":3,"./core/events/leave":4,"./core/events/track":5,"./core/initialize":7,"./defaults":8,"./util/log":12,"./util/object":13}],10:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.arraysMatch = arraysMatch;
-function arraysMatch(arr1, arr2) {
-  if (arr1.length == arr2.length) {
-    if (arr1.sort().join(',') === arr2.sort().join(',')) {
-      return true;
-    }
-  }
-
-  return false;
-}
-},{}],11:[function(require,module,exports){
+},{"./core/destroy":2,"./core/events/enter":3,"./core/events/leave":4,"./core/events/track":5,"./core/initialize":7,"./defaults":8,"./util/log":11,"./util/object":12}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -429,7 +471,7 @@ function isMobileUserAgent() {
   }
   return isMobile;
 }
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -439,27 +481,20 @@ exports.warn = warn;
 function warn(msg) {
   console.error("[CustomCursor]: " + msg);
 }
-},{}],13:[function(require,module,exports){
-'use strict';
+},{}],12:[function(require,module,exports){
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.areOptionsEqual = areOptionsEqual;
-
-var _array = require('./array.js');
-
 function areOptionsEqual(object1, object2) {
   for (var key in object1) {
     if (object1.hasOwnProperty(key)) {
-      if (Array.isArray(object1[key])) {
-        if (!(0, _array.arraysMatch)(object1[key], object2[key])) {
-          return false;
-        }
-      } else if (object1[key] !== object2[key]) return false;
+      if (object1[key] !== object2[key]) return false;
     }
   }
 
   return true;
 }
-},{"./array.js":10}]},{},[1]);
+},{}]},{},[1]);

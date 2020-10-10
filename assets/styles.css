@@ -50,12 +50,19 @@ body {
    opacity: 0;
 }
 
+
 .cursor.cursor--focused .cursor-border {
    width: 90px;
    height: 90px;
 }
 
-.cursor.cursor--focused .text {
+.cursor.cursor--disabled .cursor-border {
+   opacity: .5;
+   height: 30px;
+   width: 30px;
+}
+
+.cursor.cursor--focused-view .text {
    opacity: 1;
    transition: opacity 360ms cubic-bezier(.23,1,.32,1);
 }
