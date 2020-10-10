@@ -51,15 +51,10 @@ body {
 }
 
 
-.cursor.cursor--focused .cursor-border {
+.cursor.cursor--focused .cursor-border,
+.cursor.cursor--focused-view .cursor-border {
    width: 90px;
    height: 90px;
-}
-
-.cursor.cursor--disabled .cursor-border {
-   opacity: .5;
-   height: 30px;
-   width: 30px;
 }
 
 .cursor.cursor--focused-view .text {

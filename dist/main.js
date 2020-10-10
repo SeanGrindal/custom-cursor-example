@@ -1,6 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const CustomCursor = require('custom-cursor.js').default 
-const customCursor = new CustomCursor('.cursor', {
+new CustomCursor('.cursor', {
    focusElements: [{
       selector: '.photo-link',
       focusClass: 'cursor--focused-view'
@@ -89,6 +89,7 @@ var Focus = function () {
 
     this.elementEnter = function (focusClass, customEnterFunc) {
       var func = function func() {
+        console.log(1);
         if (focusClass) {
           _this.cursor.element.classList.add(focusClass);
         }
@@ -141,7 +142,9 @@ var Focus = function () {
             for (var _iterator = elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var el = _step.value;
 
-              if (_this2.initializedElements.includes(el)) continue;
+              if (_this2.initializedElements.map(function (item) {
+                return item.el;
+              }).includes(el)) continue;
 
               el.addEventListener('mouseenter', enterFunc);
               el.addEventListener('mouseleave', leaveFunc);
