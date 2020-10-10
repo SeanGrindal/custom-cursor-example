@@ -8,8 +8,6 @@ body {
 
 .cursor {
    color: #ff5050;
-   box-sizing: border-box;
-   border-radius: 50%;
    display: none;
    pointer-events: none;
    -webkit-user-select: none;
@@ -17,27 +15,24 @@ body {
    -ms-user-select: none;
    user-select: none;
    position: fixed;
-   height: 0;
-   width: 0;
-   transform-origin: center;
    transition: all 360ms cubic-bezier(.23,1,.32,1);
    will-change: transform;
    z-index: 1000;
 }
 
 .cursor-border {
-   align-items: center;
-   justify-content: center;
-   border: 1px solid #ff5050;
-   width: 60px;
-   height: 60px;
-   border-radius: 50%;
-   box-sizing: border-box;
    position: absolute;
+   box-sizing: border-box;
+   align-items: center;
+   border: 1px solid #ff5050;
+   border-radius: 50%;
+   display: flex;
+   justify-content: center;
+   height: 60px;
+   width: 60px;
    left: 0;
    top: 0;
    transform: translate(-50%, -50%);
-   display: flex;
    transition: all 360ms cubic-bezier(.23,1,.32,1);
 }
 
@@ -92,11 +87,16 @@ a:hover {
    user-select: none;
 }
 
-.github-link {
+.github-link, .npm-link {
    padding: 8px;
    top: 8px;
    right: 8px;
    position: fixed;
    font-size: .75rem;
    text-transform: uppercase;
+}
+
+.npm-link {
+   right: initial;
+   left: 8px;
 }

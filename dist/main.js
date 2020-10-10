@@ -105,6 +105,8 @@ var Focus = function () {
           for (var _iterator = elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var el = _step.value;
 
+            if (_this2.initializedElements.includes(el)) continue;
+
             el.addEventListener('mouseenter', _this2.elementEnter);
             el.addEventListener('mouseleave', _this2.elementLeave);
 
@@ -198,7 +200,7 @@ function initialize(cursor) {
     cursor.initialized = true;
   }
 }
-},{"../util/isMobileUserAgent":10,"./focus":6}],8:[function(require,module,exports){
+},{"../util/isMobileUserAgent":11,"./focus":6}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -345,8 +347,11 @@ var CustomCursor = function () {
     value: function update(newOptions) {
       if (!newOptions) {
         (0, _log.warn)('No new options are specified in update call');
+
         return;
       }
+
+      console.log(newOptions, this.options);
 
       if (!(0, _object.areOptionsEqual)(newOptions, this.options)) {
         var _iteratorNormalCompletion = true;
@@ -394,7 +399,23 @@ var CustomCursor = function () {
 }();
 
 exports.default = CustomCursor;
-},{"./core/destroy":2,"./core/events/enter":3,"./core/events/leave":4,"./core/events/track":5,"./core/initialize":7,"./defaults":8,"./util/log":11,"./util/object":12}],10:[function(require,module,exports){
+},{"./core/destroy":2,"./core/events/enter":3,"./core/events/leave":4,"./core/events/track":5,"./core/initialize":7,"./defaults":8,"./util/log":12,"./util/object":13}],10:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.arraysMatch = arraysMatch;
+function arraysMatch(arr1, arr2) {
+  if (arr1.length == arr2.length) {
+    if (arr1.sort().join(',') === arr2.sort().join(',')) {
+      return true;
+    }
+  }
+
+  return false;
+}
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -408,7 +429,7 @@ function isMobileUserAgent() {
   }
   return isMobile;
 }
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -418,20 +439,27 @@ exports.warn = warn;
 function warn(msg) {
   console.error("[CustomCursor]: " + msg);
 }
-},{}],12:[function(require,module,exports){
-"use strict";
+},{}],13:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.areOptionsEqual = areOptionsEqual;
+
+var _array = require('./array.js');
+
 function areOptionsEqual(object1, object2) {
   for (var key in object1) {
     if (object1.hasOwnProperty(key)) {
-      if (object1[key] !== object2[key]) return false;
+      if (Array.isArray(object1[key])) {
+        if (!(0, _array.arraysMatch)(object1[key], object2[key])) {
+          return false;
+        }
+      } else if (object1[key] !== object2[key]) return false;
     }
   }
 
   return true;
 }
-},{}]},{},[1]);
+},{"./array.js":10}]},{},[1]);
