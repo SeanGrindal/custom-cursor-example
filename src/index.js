@@ -1,8 +1,8 @@
 const CustomCursor = require('custom-cursor.js').default 
-new CustomCursor('.cursor', {
+const customCursor = new CustomCursor('.cursor', {
    hideTrueCursor: true,
    focusElements: [{
       selector: '.photo-link',
       focusClass: 'cursor--focused-view'
    }, 'a']
-}).initialize()
+}).setPosition(-30, -30).initialize()
